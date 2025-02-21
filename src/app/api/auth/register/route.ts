@@ -21,6 +21,17 @@ const validatePassword = (password: string) => {
     return errors;
 };
 
+// 生成随机头像URL
+function generateAvatarUrl(email: string) {
+    // 使用邮箱的MD5作为种子，确保同一邮箱生成相同的头像
+    const emailHash = crypto.createHash('md5').update(email.toLowerCase()).digest('hex');
+    // 使用 Dicebear Avatars API 生成头像
+    // 可选风格：adventurer, adventurer-neutral, avataaars, big-ears, big-ears-neutral, 
+    // big-smile, bottts, croodles, croodles-neutral, identicon, initials, micah, 
+    // miniavs, open-peeps, personas, pixel-art, pixel-art-neutral
+    return `https://api.dicebear.com/7.x/micah/svg?seed=${emailHash}`;
+}
+
 export async function POST(request: Request) {
     try {
         const { email, password, name } = await request.json();
@@ -62,12 +73,16 @@ export async function POST(request: Request) {
         const tokenExpiry = new Date();
         tokenExpiry.setHours(tokenExpiry.getHours() + 24); // 24小时后过期
 
+        // 生成随机头像
+        const avatarUrl = generateAvatarUrl(email);
+
         // 创建用户和验证记录
-        const user = await prisma.user.create({
+        await prisma.user.create({
             data: {
                 email,
                 name,
                 password: hashedPassword,
+                image: avatarUrl,
                 emailVerification: {
                     create: {
                         token: verificationToken,
