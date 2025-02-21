@@ -12,8 +12,8 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 
 const httpsOptions = {
-  key: fs.readFileSync(path.join(__dirname, "cert", "private.key")),
-  cert: fs.readFileSync(path.join(__dirname, "cert", "certificate.crt")),
+  key: fs.readFileSync(path.join(__dirname, "cert", "kuroneko.chat-key.pem")),
+  cert: fs.readFileSync(path.join(__dirname, "cert", "kuroneko.chat-crt.pem")),
 };
 
 app.prepare().then(() => {
@@ -26,8 +26,12 @@ app.prepare().then(() => {
       res.statusCode = 500;
       res.end("Internal server error");
     }
-  }).listen(3000, (err) => {
+  }).listen(process.env.PORT || 443, process.env.HOST || "0.0.0.0", (err) => {
     if (err) throw err;
-    console.log("> Ready on https://localhost:3000");
+    console.log(
+      `> Ready on https://${process.env.HOST || "localhost"}:${
+        process.env.PORT || 443
+      }`
+    );
   });
 });
