@@ -65,8 +65,9 @@ model VerificationToken {
 model Post {
   id        String   @id @default(cuid())
   title     String
-  content   String
+  content   String   // SQLite 会自动处理大文本
   published Boolean  @default(false)
+  isPublic  Boolean  @default(false)  // 是否公开
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   authorId  String

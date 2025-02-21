@@ -11,6 +11,9 @@ export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // 获取回调URL，默认跳转到文档列表页面
+  const callbackUrl = searchParams.get('callbackUrl') || '/documents';
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
@@ -25,6 +28,7 @@ export default function LoginForm() {
         email,
         password,
         redirect: false,
+        callbackUrl,
       });
 
       if (result?.error) {
@@ -32,11 +36,28 @@ export default function LoginForm() {
         return;
       }
 
-      router.push('/dashboard');
+      // 登录成功后跳转
+      router.push(callbackUrl);
       router.refresh();
-    } catch (_) {
+    } catch (error) {
+      console.error('Login error:', error);
       setError('An error occurred. Please try again.');
     } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleGitHubLogin() {
+    setLoading(true);
+    try {
+      // GitHub 登录会自动处理重定向
+      await signIn('github', { 
+        callbackUrl,
+        redirect: true 
+      });
+    } catch (error) {
+      console.error('GitHub login error:', error);
+      setError('Failed to login with GitHub');
       setLoading(false);
     }
   }
@@ -132,10 +153,23 @@ export default function LoginForm() {
       <div className="text-center">
         <button
           type="button"
-          onClick={() => signIn('github')}
-          className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          onClick={handleGitHubLogin}
+          disabled={loading}
+          className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50"
         >
-          Sign in with GitHub
+          {loading ? (
+            <>
+              <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </span>
+              Connecting to GitHub...
+            </>
+          ) : (
+            'Sign in with GitHub'
+          )}
         </button>
       </div>
     </form>
