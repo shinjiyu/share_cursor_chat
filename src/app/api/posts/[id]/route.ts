@@ -13,8 +13,10 @@ export async function GET(
 ) {
     try {
         const session = await getServerSession(authOptions);
+        const { id } = params;
+
         const post = await prisma.post.findUnique({
-            where: { id: params.id },
+            where: { id },
             include: {
                 author: {
                     select: {
@@ -58,6 +60,7 @@ export async function PUT(
 ) {
     try {
         const session = await getServerSession(authOptions);
+        const { id } = params;
 
         if (!session?.user?.id) {
             return NextResponse.json(
@@ -67,7 +70,7 @@ export async function PUT(
         }
 
         const post = await prisma.post.findUnique({
-            where: { id: params.id },
+            where: { id },
         });
 
         if (!post) {
@@ -100,7 +103,7 @@ export async function PUT(
 
         // 更新文档
         const updatedPost = await prisma.post.update({
-            where: { id: params.id },
+            where: { id },
             data: {
                 title,
                 content,
@@ -125,6 +128,7 @@ export async function DELETE(
 ) {
     try {
         const session = await getServerSession(authOptions);
+        const { id } = params;
 
         if (!session?.user?.id) {
             return NextResponse.json(
@@ -134,7 +138,7 @@ export async function DELETE(
         }
 
         const post = await prisma.post.findUnique({
-            where: { id: params.id },
+            where: { id },
         });
 
         if (!post) {
@@ -153,7 +157,7 @@ export async function DELETE(
         }
 
         await prisma.post.delete({
-            where: { id: params.id },
+            where: { id },
         });
 
         return NextResponse.json(

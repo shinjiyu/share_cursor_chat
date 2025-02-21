@@ -91,14 +91,14 @@ export default function DocumentsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 py-8">
+      <div className="min-h-screen bg-slate-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse flex space-x-4">
             <div className="flex-1 space-y-4 py-1">
-              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              <div className="h-4 bg-slate-200 rounded w-3/4"></div>
               <div className="space-y-2">
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                <div className="h-4 bg-slate-200 rounded"></div>
+                <div className="h-4 bg-slate-200 rounded w-5/6"></div>
               </div>
             </div>
           </div>
@@ -108,78 +108,78 @@ export default function DocumentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
+    <div className="min-h-screen bg-slate-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900">My Documents</h1>
-          <Link
-            href="/documents/new"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-          >
-            New Document
-          </Link>
+        <div className="bg-white shadow-sm rounded-lg p-6 mb-6">
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-semibold text-slate-800">My Documents</h1>
+            <Link
+              href="/documents/new"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+            >
+              New Document
+            </Link>
+          </div>
         </div>
 
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+          <div className="bg-rose-50 border border-rose-200 rounded-lg p-4 mb-6">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="h-5 w-5 text-rose-400" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
               </div>
               <div className="ml-3">
-                <p className="text-sm text-red-700">{error}</p>
+                <p className="text-sm text-rose-700">{error}</p>
               </div>
             </div>
           </div>
         )}
 
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <ul className="divide-y divide-gray-200">
+        <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+          <ul className="divide-y divide-slate-200">
             {posts.map((post) => (
-              <li key={post.id}>
-                <div className="px-4 py-4 sm:px-6">
+              <li key={post.id} className="hover:bg-slate-50">
+                <div className="px-6 py-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <p className="text-sm font-medium text-indigo-600 truncate">
+                      <p className="text-sm font-medium text-blue-600 truncate">
                         <Link href={`/documents/${post.id}`} className="hover:underline">
                           {post.title}
                         </Link>
                       </p>
                       <span className={`ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        post.isPublic ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                        post.isPublic ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-800'
                       }`}>
                         {post.isPublic ? 'Public' : 'Private'}
                       </span>
                     </div>
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-3">
                       <button
                         onClick={() => handleVisibilityToggle(post.id, post.isPublic)}
-                        className="text-sm text-gray-600 hover:text-gray-900"
+                        className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
                       >
                         {post.isPublic ? 'Make Private' : 'Make Public'}
                       </button>
                       <Link
                         href={`/documents/${post.id}/edit`}
-                        className="text-sm text-indigo-600 hover:text-indigo-900"
+                        className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
                       >
                         Edit
                       </Link>
                       <button
                         onClick={() => handleDelete(post.id)}
-                        className="text-sm text-red-600 hover:text-red-900"
+                        className="text-sm text-rose-600 hover:text-rose-700 transition-colors"
                       >
                         Delete
                       </button>
                     </div>
                   </div>
-                  <div className="mt-2 sm:flex sm:justify-between">
-                    <div className="sm:flex">
-                      <p className="flex items-center text-sm text-gray-500">
-                        Last updated {new Date(post.updatedAt).toLocaleDateString()}
-                      </p>
-                    </div>
+                  <div className="mt-2">
+                    <p className="text-sm text-slate-500">
+                      Last updated {new Date(post.updatedAt).toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
               </li>
@@ -188,24 +188,26 @@ export default function DocumentsPage() {
         </div>
 
         {posts.length === 0 && (
-          <div className="text-center py-12">
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No documents</h3>
-            <p className="mt-1 text-sm text-gray-500">Get started by creating a new document.</p>
+          <div className="bg-white shadow-sm rounded-lg p-12 text-center">
+            <h3 className="text-sm font-medium text-slate-800">No documents</h3>
+            <p className="mt-1 text-sm text-slate-500">Get started by creating a new document.</p>
           </div>
         )}
 
         {pagination.totalPages > 1 && (
           <div className="flex justify-center mt-6">
-            <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+            <nav className="bg-white shadow-sm rounded-md inline-flex">
               {Array.from({ length: pagination.totalPages }).map((_, i) => (
                 <button
                   key={i}
                   onClick={() => fetchPosts(i + 1)}
-                  className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                  className={`relative inline-flex items-center px-4 py-2 text-sm font-medium ${
                     pagination.page === i + 1
-                      ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
-                      : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                  }`}
+                      ? 'text-blue-600 bg-blue-50 border-blue-600 z-10'
+                      : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50 border-transparent'
+                  } ${i === 0 ? 'rounded-l-md' : ''} ${
+                    i === pagination.totalPages - 1 ? 'rounded-r-md' : ''
+                  } border transition-colors`}
                 >
                   {i + 1}
                 </button>
