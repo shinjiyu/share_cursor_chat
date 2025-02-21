@@ -50,6 +50,7 @@ model User {
   accounts          Account[]
   sessions          Session[]
   posts             Post[]
+  votes             Vote[]              // 添加投票关系
   emailVerification EmailVerification[]
   passwordReset     PasswordReset[]
 }
@@ -72,6 +73,9 @@ model Post {
   updatedAt DateTime @updatedAt
   authorId  String
   author    User     @relation(fields: [authorId], references: [id])
+  votes     Vote[]   // 添加投票关系
+  upvotes   Int      @default(0)  // 点赞数
+  downvotes Int      @default(0)  // 点踩数
 }
 
 model EmailVerification {
@@ -90,4 +94,21 @@ model PasswordReset {
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   expiresAt DateTime
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  type      VoteType
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+}
+
+enum VoteType {
+  UP
+  DOWN
 }

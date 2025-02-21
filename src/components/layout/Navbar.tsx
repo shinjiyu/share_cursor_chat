@@ -21,22 +21,30 @@ export function Navbar() {
                 Markdown Share
               </Link>
             </div>
-            {session && (
-              <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <Link
-                  href="/documents"
-                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-slate-600 hover:text-blue-600 border-b-2 border-transparent hover:border-blue-600"
-                >
-                  My Documents
-                </Link>
-                <Link
-                  href="/documents/new"
-                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-slate-600 hover:text-blue-600 border-b-2 border-transparent hover:border-blue-600"
-                >
-                  New Document
-                </Link>
-              </div>
-            )}
+            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+              <Link
+                href="/explore"
+                className="inline-flex items-center px-1 pt-1 text-sm font-medium text-slate-600 hover:text-blue-600 border-b-2 border-transparent hover:border-blue-600"
+              >
+                Explore
+              </Link>
+              {session && (
+                <>
+                  <Link
+                    href="/documents"
+                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-slate-600 hover:text-blue-600 border-b-2 border-transparent hover:border-blue-600"
+                  >
+                    My Documents
+                  </Link>
+                  <Link
+                    href="/documents/new"
+                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-slate-600 hover:text-blue-600 border-b-2 border-transparent hover:border-blue-600"
+                  >
+                    New Document
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
           <div className="flex items-center">
             {session ? (
