@@ -1,20 +1,26 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
+    setError(null);
+    setLoading(true);
 
     try {
+      const formData = new FormData(e.currentTarget);
+      const email = formData.get('email') as string;
+      const password = formData.get('password') as string;
+
       const result = await signIn('credentials', {
         email,
         password,
@@ -22,14 +28,16 @@ export default function LoginForm() {
       });
 
       if (result?.error) {
-        setError('Invalid email or password');
+        setError(result.error);
         return;
       }
 
       router.push('/dashboard');
       router.refresh();
-    } catch (error) {
+    } catch (_) {
       setError('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -66,16 +74,58 @@ export default function LoginForm() {
         </div>
       </div>
 
+      <div className="flex items-center justify-between">
+        <div className="text-sm">
+          <Link
+            href="/forgot-password"
+            className="font-medium text-indigo-600 hover:text-indigo-500"
+          >
+            Forgot your password?
+          </Link>
+        </div>
+      </div>
+
       {error && (
         <div className="text-red-500 text-sm text-center">{error}</div>
+      )}
+
+      {searchParams.get('registered') === 'true' && (
+        <div className="text-green-500 text-sm text-center">
+          Registration successful! Please verify your email before logging in.
+        </div>
+      )}
+
+      {searchParams.get('verified') === 'true' && (
+        <div className="text-green-500 text-sm text-center">
+          Email verified successfully! You can now log in.
+        </div>
+      )}
+
+      {searchParams.get('reset') === 'true' && (
+        <div className="text-green-500 text-sm text-center">
+          Password reset successfully! You can now log in with your new password.
+        </div>
       )}
 
       <div>
         <button
           type="submit"
-          className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          disabled={loading}
+          className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
         >
-          Sign in
+          {loading ? (
+            <>
+              <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </span>
+              Signing in...
+            </>
+          ) : (
+            'Sign in'
+          )}
         </button>
       </div>
 

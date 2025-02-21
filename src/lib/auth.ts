@@ -11,6 +11,14 @@ export const authOptions: NextAuthOptions = {
         GitHubProvider({
             clientId: process.env.GITHUB_ID!,
             clientSecret: process.env.GITHUB_SECRET!,
+            profile(profile) {
+                return {
+                    id: profile.id.toString(),
+                    name: profile.name || profile.login,
+                    email: profile.email,
+                    image: profile.avatar_url,
+                };
+            },
         }),
         CredentialsProvider({
             name: 'credentials',
@@ -20,7 +28,7 @@ export const authOptions: NextAuthOptions = {
             },
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) {
-                    return null;
+                    throw new Error('Email and password required');
                 }
 
                 const user = await prisma.user.findUnique({
@@ -28,17 +36,22 @@ export const authOptions: NextAuthOptions = {
                 });
 
                 if (!user || !user.password) {
-                    return null;
+                    throw new Error('Invalid email or password');
                 }
 
                 const isValid = await bcrypt.compare(credentials.password, user.password);
 
                 if (!isValid) {
-                    return null;
+                    throw new Error('Invalid email or password');
+                }
+
+                // 检查邮箱是否已验证
+                if (!user.emailVerified) {
+                    throw new Error('Please verify your email before logging in');
                 }
 
                 return {
-                    id: user.id.toString(),
+                    id: user.id,
                     email: user.email,
                     name: user.name,
                     image: user.image,
@@ -46,18 +59,26 @@ export const authOptions: NextAuthOptions = {
             }
         })
     ],
+    pages: {
+        signIn: '/login',
+        error: '/login',
+    },
     session: {
         strategy: 'jwt'
     },
-    pages: {
-        signIn: '/login',
-    },
     callbacks: {
         async session({ session, token }) {
-            if (session.user) {
-                session.user.id = token.sub!;
+            if (session?.user) {
+                session.user.id = token.sub;
             }
             return session;
-        }
-    }
+        },
+        async jwt({ token, user }) {
+            if (user) {
+                token.id = user.id;
+            }
+            return token;
+        },
+    },
+    debug: process.env.NODE_ENV === 'development',
 }; 
